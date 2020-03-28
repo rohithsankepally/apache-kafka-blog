@@ -1,0 +1,43 @@
+version: '3'
+
+networks:
+  kafka-tier:
+    driver: bridge
+
+services:
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
+    networks:
+      - kafka-tier
+    ports:
+     - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  broker-0:
+    image: 'bitnami/kafka:latest'
+    container_name: broker-0
+    networks:
+      - kafka-tier
+    ports:
+     - '9092:9092'
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - ./broker-0.properties:/opt/bitnami/kafka/conf/server.properties
+    depends_on:
+      - zookeeper
+  broker-1:
+    image: 'bitnami/kafka:latest'
+    container_name: broker-1
+    networks:
+      - kafka-tier
+    ports:
+     - '9093:9093'
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - ./broker-1.properties:/opt/bitnami/kafka/conf/server.properties
+    depends_on:
+      - zookeeper
+
